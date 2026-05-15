@@ -1,0 +1,109 @@
+{
+  "name": "code-annotate",
+  "displayName": "Code Annotate",
+  "description": "Add GitHub-style review annotations to any file. Threaded replies, resolve/unresolve, and a plain JSON store that AI agents can read.",
+  "version": "0.0.1",
+  "publisher": "msanath",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "annotations",
+    "comments",
+    "review",
+    "notes",
+    "ai"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/msanath/code-annotate"
+  },
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "codeAnnotate.addAnnotation",
+        "title": "Code Annotate: Add Annotation"
+      },
+      {
+        "command": "codeAnnotate.replyToThread",
+        "title": "Reply",
+        "enablement": "!commentIsEmpty"
+      },
+      {
+        "command": "codeAnnotate.resolveThread",
+        "title": "Resolve"
+      },
+      {
+        "command": "codeAnnotate.unresolveThread",
+        "title": "Unresolve"
+      },
+      {
+        "command": "codeAnnotate.deleteAnnotation",
+        "title": "Delete Annotation"
+      },
+      {
+        "command": "codeAnnotate.showAllAnnotations",
+        "title": "Code Annotate: Show All Annotations"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "codeAnnotate.addAnnotation",
+          "when": "editorHasSelection",
+          "group": "1_modification"
+        }
+      ],
+      "comments/commentThread/title": [
+        {
+          "command": "codeAnnotate.resolveThread",
+          "group": "inline@1",
+          "when": "commentController == codeAnnotate && commentThread =~ /open/"
+        },
+        {
+          "command": "codeAnnotate.unresolveThread",
+          "group": "inline@1",
+          "when": "commentController == codeAnnotate && commentThread =~ /resolved/"
+        },
+        {
+          "command": "codeAnnotate.deleteAnnotation",
+          "group": "inline@2",
+          "when": "commentController == codeAnnotate"
+        }
+      ],
+      "comments/commentThread/context": [
+        {
+          "command": "codeAnnotate.replyToThread",
+          "group": "inline@1",
+          "when": "commentController == codeAnnotate"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "codeAnnotate.addAnnotation",
+        "key": "ctrl+alt+a",
+        "mac": "cmd+alt+a",
+        "when": "editorHasSelection"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
+}
