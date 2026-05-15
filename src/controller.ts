@@ -133,20 +133,45 @@ export class AnnotationController implements vscode.Disposable {
     this.changeEmitter.fire();
   }
 
-  async reply(thread: vscode.CommentThread, body: string): Promise<void> {
-    const id = this.findAnnotationIdByThread(thread);
-    if (!id) return;
-    const ann = this.storage.getById(id);
-    if (!ann) return;
+  async submit(thread: vscode.CommentThread, body: string): Promise<void> {
     const trimmed = body.trim();
     if (!trimmed) return;
-    ann.thread.push({
-      author: this.author,
-      timestamp: new Date().toISOString(),
-      body: trimmed
-    });
+    const existingId = this.findAnnotationIdByThread(thread);
+    if (existingId) {
+      const ann = this.storage.getById(existingId);
+      if (!ann) return;
+      ann.thread.push({
+        author: this.author,
+        timestamp: new Date().toISOString(),
+        body: trimmed
+      });
+      await this.storage.upsert(ann);
+      thread.comments = [...ann.thread.map((r) => this.toComment(r))];
+      return;
+    }
+    const range = thread.range ?? new vscode.Range(0, 0, 0, 0);
+    const ann: Annotation = {
+      id: `ann_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      file: this.toRelativePath(thread.uri),
+      startLine: range.start.line + 1,
+      endLine: range.end.line + 1,
+      status: "open",
+      createdAt: new Date().toISOString(),
+      thread: [
+        {
+          author: this.author,
+          timestamp: new Date().toISOString(),
+          body: trimmed
+        }
+      ]
+    };
     await this.storage.upsert(ann);
-    thread.comments = [...ann.thread.map((r) => this.toComment(r))];
+    thread.comments = [this.toComment(ann.thread[0])];
+    thread.collapsibleState = vscode.CommentThreadCollapsibleState.Expanded;
+    thread.state = vscode.CommentThreadState.Unresolved;
+    thread.contextValue = "open";
+    this.threads.set(ann.id, { thread, annotationId: ann.id });
+    this.changeEmitter.fire();
   }
 
   async setStatus(thread: vscode.CommentThread, status: "open" | "resolved"): Promise<void> {

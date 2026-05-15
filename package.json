@@ -93,6 +93,17 @@
         "key": "ctrl+alt+a",
         "mac": "cmd+alt+a",
         "when": "editorHasSelection"
+      },
+      {
+        "command": "editor.action.submitComment",
+        "key": "enter",
+        "when": "commentEditorFocused && !suggestWidgetVisible"
+      },
+      {
+        "command": "default:type",
+        "args": { "text": "\n" },
+        "key": "shift+enter",
+        "when": "commentEditorFocused"
       }
     ]
   },

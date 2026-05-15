@@ -90,7 +90,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       async (reply: vscode.CommentReply) => {
         const s = requireState();
         if (!s) return;
-        await s.controller.reply(reply.thread, reply.text);
+        await s.controller.submit(reply.thread, reply.text);
+        s.decorations.refresh();
       }
     ),
 
