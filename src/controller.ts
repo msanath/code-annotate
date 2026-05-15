@@ -110,27 +110,12 @@ export class AnnotationController implements vscode.Disposable {
     return rel.split("\\").join("/");
   }
 
-  async addAnnotation(uri: vscode.Uri, range: vscode.Range, body: string): Promise<void> {
-    const trimmed = body.trim();
-    if (!trimmed) return;
-    const ann: Annotation = {
-      id: `ann_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-      file: this.toRelativePath(uri),
-      startLine: range.start.line + 1,
-      endLine: range.end.line + 1,
-      status: "open",
-      createdAt: new Date().toISOString(),
-      thread: [
-        {
-          author: this.author,
-          timestamp: new Date().toISOString(),
-          body: trimmed
-        }
-      ]
-    };
-    await this.storage.upsert(ann);
-    this.createThreadFor(ann);
-    this.changeEmitter.fire();
+  startDraftThread(uri: vscode.Uri, range: vscode.Range): vscode.CommentThread {
+    const thread = this.commentController.createCommentThread(uri, range, []);
+    thread.collapsibleState = vscode.CommentThreadCollapsibleState.Expanded;
+    thread.state = vscode.CommentThreadState.Unresolved;
+    thread.contextValue = "draft";
+    return thread;
   }
 
   async submit(thread: vscode.CommentThread, body: string): Promise<void> {
@@ -191,10 +176,11 @@ export class AnnotationController implements vscode.Disposable {
 
   async deleteThread(thread: vscode.CommentThread): Promise<void> {
     const id = this.findAnnotationIdByThread(thread);
-    if (!id) return;
-    await this.storage.remove(id);
+    if (id) {
+      await this.storage.remove(id);
+      this.threads.delete(id);
+    }
     thread.dispose();
-    this.threads.delete(id);
     this.changeEmitter.fire();
   }
 

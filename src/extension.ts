@@ -75,14 +75,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         selection.end.character === 0 && selection.end.line > selection.start.line
           ? selection.end.line - 1
           : selection.end.line;
-      const range = new vscode.Range(startLine, 0, endLine, 0);
-      const body = await vscode.window.showInputBox({
-        prompt: `Annotate lines ${startLine + 1}-${endLine + 1}`,
-        placeHolder: "What about this code?"
-      });
-      if (!body) return;
-      await s.controller.addAnnotation(editor.document.uri, range, body);
-      s.decorations.refresh();
+      const endLineLength = editor.document.lineAt(endLine).range.end.character;
+      const range = new vscode.Range(startLine, 0, endLine, endLineLength);
+      s.controller.startDraftThread(editor.document.uri, range);
+      editor.selection = new vscode.Selection(startLine, 0, endLine, endLineLength);
     }),
 
     vscode.commands.registerCommand(
@@ -120,12 +116,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       async (thread: vscode.CommentThread) => {
         const s = requireState();
         if (!s) return;
-        const confirm = await vscode.window.showWarningMessage(
-          "Delete this annotation and its thread?",
-          { modal: true },
-          "Delete"
-        );
-        if (confirm !== "Delete") return;
+        const isSaved = !!s.controller.findAnnotationIdByThread(thread);
+        if (isSaved) {
+          const confirm = await vscode.window.showWarningMessage(
+            "Delete this annotation and its thread?",
+            { modal: true },
+            "Delete"
+          );
+          if (confirm !== "Delete") return;
+        }
         await s.controller.deleteThread(thread);
         s.decorations.refresh();
       }

@@ -1,0 +1,49 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Code annotation logo">
+  <defs>
+    <linearGradient id="bg" x1="12" y1="8" x2="118" y2="124" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#071226"/>
+      <stop offset="1" stop-color="#0B1530"/>
+    </linearGradient>
+    <linearGradient id="bracket" x1="12" y1="34" x2="116" y2="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9F7BFF"/>
+      <stop offset="1" stop-color="#6D3DFF"/>
+    </linearGradient>
+    <linearGradient id="bubble" x1="39" y1="40" x2="85" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2A9BFF"/>
+      <stop offset="1" stop-color="#0F6DFF"/>
+    </linearGradient>
+    <linearGradient id="pen" x1="70" y1="75" x2="100" y2="47" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1EDAE3"/>
+      <stop offset="1" stop-color="#45FFF1"/>
+    </linearGradient>
+    <linearGradient id="nib" x1="66" y1="88" x2="80" y2="72" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#191E62"/>
+      <stop offset="1" stop-color="#3A2C91"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="128" height="128" rx="20" fill="url(#bg)"/>
+
+  <g filter="url(#shadow)">
+    <!-- code brackets -->
+    <path d="M35.9 31.9C38.1 34.1 38.1 37.8 35.9 40L21.8 54.1L35.9 68.2C38.1 70.4 38.1 74.1 35.9 76.3L34 78.2C31.8 80.4 28.1 80.4 25.9 78.2L7.8 60.1C4.5 56.8 4.5 51.4 7.8 48.1L25.9 30C28.1 27.8 31.8 27.8 34 30L35.9 31.9Z" fill="url(#bracket)"/>
+    <path d="M92.1 31.9C89.9 34.1 89.9 37.8 92.1 40L106.2 54.1L92.1 68.2C89.9 70.4 89.9 74.1 92.1 76.3L94 78.2C96.2 80.4 99.9 80.4 102.1 78.2L120.2 60.1C123.5 56.8 123.5 51.4 120.2 48.1L102.1 30C99.9 27.8 96.2 27.8 94 30L92.1 31.9Z" fill="url(#bracket)"/>
+
+    <!-- comment bubble -->
+    <path d="M40 40H78C84.6 40 90 45.4 90 52V65.8C90 72.4 84.6 77.8 78 77.8H62.2L53.9 86.1C51.7 88.3 48 86.7 48 83.6V77.8H40C33.4 77.8 28 72.4 28 65.8V52C28 45.4 33.4 40 40 40Z" fill="url(#bubble)"/>
+    <rect x="45" y="51" width="31" height="4" rx="2" fill="#BDF9FF" opacity="0.9"/>
+    <rect x="45" y="62" width="23" height="4" rx="2" fill="#BDF9FF" opacity="0.85"/>
+
+    <!-- highlight underline -->
+    <rect x="39" y="91" width="40" height="4" rx="2" fill="#29F1EA"/>
+
+    <!-- pen / annotation marker -->
+    <path d="M64.9 84.8L83.5 66.2L92.4 75.1L73.8 93.7C72.7 94.8 71 95 69.7 94.2L65.6 91.8L63.2 87.7C62.4 86.4 62.6 85.9 64.9 84.8Z" fill="url(#nib)"/>
+    <path d="M78.2 62.8L89.4 51.6C92.6 48.4 97.8 48.4 101 51.6L104.4 55C107.6 58.2 107.6 63.4 104.4 66.6L93.2 77.8L78.2 62.8Z" fill="url(#pen)"/>
+    <path d="M88.4 52.6L103.4 67.6" stroke="#1297B7" stroke-width="2.8" opacity="0.45"/>
+    <path d="M61.6 88.1L56.8 92.9L62.8 96.4L67.2 92" fill="#22DCE8"/>
+  </g>
+</svg>

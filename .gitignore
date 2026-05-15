@@ -1,5 +1,6 @@
 node_modules/
 out/
 *.vsix
+*.mov
 .DS_Store
 .vscode-test/

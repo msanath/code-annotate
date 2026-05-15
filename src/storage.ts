@@ -25,8 +25,9 @@ export class Storage implements vscode.Disposable {
     this.watcher.onDidCreate(onChange);
     this.watcher.onDidChange(onChange);
     this.watcher.onDidDelete(() => {
-      this.data = emptyFile();
-      this.externalChangeEmitter.fire(this.data);
+      vscode.window.showWarningMessage(
+        "Code Annotate: .annotations.json was deleted. In-memory annotations preserved; the file will be recreated on the next change."
+      );
     });
   }
 
@@ -42,17 +43,33 @@ export class Storage implements vscode.Disposable {
 
   async load(): Promise<AnnotationsFile> {
     if (!this.fileUri) return this.data;
+    let bytes: Uint8Array;
     try {
-      const bytes = await vscode.workspace.fs.readFile(this.fileUri);
+      bytes = await vscode.workspace.fs.readFile(this.fileUri);
+    } catch (err) {
+      if (err instanceof vscode.FileSystemError && err.code === "FileNotFound") {
+        this.data = emptyFile();
+        return this.data;
+      }
+      vscode.window.showErrorMessage(
+        `Code Annotate: failed to read .annotations.json (${String(err)}). In-memory state preserved.`
+      );
+      return this.data;
+    }
+    try {
       const text = new TextDecoder().decode(bytes);
       const parsed = JSON.parse(text) as AnnotationsFile;
       if (parsed && parsed.version === 1 && Array.isArray(parsed.annotations)) {
         this.data = parsed;
       } else {
-        this.data = emptyFile();
+        vscode.window.showErrorMessage(
+          "Code Annotate: .annotations.json has an unrecognized schema. In-memory state preserved; fix the file or it will be overwritten on the next change."
+        );
       }
-    } catch {
-      this.data = emptyFile();
+    } catch (err) {
+      vscode.window.showErrorMessage(
+        `Code Annotate: could not parse .annotations.json (${String(err)}). In-memory state preserved; fix the file or it will be overwritten on the next change.`
+      );
     }
     return this.data;
   }
