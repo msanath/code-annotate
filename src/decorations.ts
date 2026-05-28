@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import * as path from "path";
+import * as fs from "fs";
 import { Storage } from "./storage";
 import { Annotation } from "./types";
 
@@ -50,14 +52,14 @@ export class Decorations implements vscode.Disposable {
   }
 
   private applyTo(editor: vscode.TextEditor): void {
-    const relPath = this.toRelativePath(editor.document.uri);
-    if (relPath === undefined) {
-      editor.setDecorations(this.openDecoration, []);
-      editor.setDecorations(this.resolvedDecoration, []);
-      editor.setDecorations(this.highlightDecoration, []);
-      return;
-    }
-    const matching = this.storage.getAll().filter((a) => a.file === relPath);
+    const editorFsPath = this.realPath(editor.document.uri.fsPath);
+    const workspaceFsPath = this.realPath(this.workspaceFolder.uri.fsPath);
+    const matching = this.storage.getAll().filter((a) => {
+      const annFsPath = path.isAbsolute(a.file)
+        ? this.realPath(a.file)
+        : this.realPath(path.join(workspaceFsPath, a.file));
+      return annFsPath === editorFsPath;
+    });
     const openRanges: vscode.Range[] = [];
     const resolvedRanges: vscode.Range[] = [];
     const highlightRanges: vscode.Range[] = [];
@@ -81,10 +83,12 @@ export class Decorations implements vscode.Disposable {
     editor.setDecorations(this.highlightDecoration, highlightRanges);
   }
 
-  private toRelativePath(uri: vscode.Uri): string | undefined {
-    if (!uri.fsPath.startsWith(this.workspaceFolder.uri.fsPath)) return undefined;
-    const rel = vscode.workspace.asRelativePath(uri, false);
-    return rel.split("\\").join("/");
+  private realPath(p: string): string {
+    try {
+      return fs.realpathSync.native(p);
+    } catch {
+      return p;
+    }
   }
 
   private toRange(ann: Annotation, document: vscode.TextDocument): vscode.Range | undefined {

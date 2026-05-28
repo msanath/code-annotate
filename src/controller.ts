@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import { exec } from "child_process";
 import { promisify } from "util";
+import * as path from "path";
+import * as fs from "fs";
 import { Annotation, Reply } from "./types";
 import { Storage } from "./storage";
 
@@ -71,7 +73,7 @@ export class AnnotationController implements vscode.Disposable {
   }
 
   private createThreadFor(ann: Annotation): void {
-    const fileUri = vscode.Uri.joinPath(this.workspaceFolder.uri, ann.file);
+    const fileUri = this.resolveAnnotationUri(ann.file);
     const range = new vscode.Range(
       Math.max(0, ann.startLine - 1),
       0,
@@ -105,9 +107,27 @@ export class AnnotationController implements vscode.Disposable {
     return undefined;
   }
 
+  private resolveAnnotationUri(stored: string): vscode.Uri {
+    if (path.isAbsolute(stored)) return vscode.Uri.file(stored);
+    return vscode.Uri.joinPath(this.workspaceFolder.uri, stored);
+  }
+
   private toRelativePath(uri: vscode.Uri): string {
-    const rel = vscode.workspace.asRelativePath(uri, false);
-    return rel.split("\\").join("/");
+    const workspaceFsPath = this.realPath(this.workspaceFolder.uri.fsPath);
+    const targetFsPath = this.realPath(uri.fsPath);
+    const rel = path.relative(workspaceFsPath, targetFsPath);
+    if (rel && !rel.startsWith("..") && !path.isAbsolute(rel)) {
+      return rel.split("\\").join("/");
+    }
+    return targetFsPath.split("\\").join("/");
+  }
+
+  private realPath(p: string): string {
+    try {
+      return fs.realpathSync.native(p);
+    } catch {
+      return p;
+    }
   }
 
   startDraftThread(uri: vscode.Uri, range: vscode.Range): vscode.CommentThread {
