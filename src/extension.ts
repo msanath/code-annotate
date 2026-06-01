@@ -130,6 +130,28 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       }
     ),
 
+    vscode.commands.registerCommand("codeAnnotate.clearResolved", async () => {
+      const s = requireState();
+      if (!s) return;
+      const resolvedCount = s.storage.getAll().filter((a) => a.status === "resolved").length;
+      if (resolvedCount === 0) {
+        vscode.window.showInformationMessage("No resolved annotations to clear.");
+        return;
+      }
+      const label = resolvedCount === 1 ? "1 resolved annotation" : `${resolvedCount} resolved annotations`;
+      const confirm = await vscode.window.showWarningMessage(
+        `Delete ${label}? This cannot be undone.`,
+        { modal: true },
+        "Delete"
+      );
+      if (confirm !== "Delete") return;
+      const removed = await s.controller.clearResolved();
+      s.decorations.refresh();
+      vscode.window.showInformationMessage(
+        `Cleared ${removed} resolved annotation${removed === 1 ? "" : "s"}.`
+      );
+    }),
+
     vscode.commands.registerCommand("codeAnnotate.showAllAnnotations", async () => {
       const s = requireState();
       if (!s) return;

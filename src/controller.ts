@@ -194,6 +194,24 @@ export class AnnotationController implements vscode.Disposable {
     this.changeEmitter.fire();
   }
 
+  async clearResolved(): Promise<number> {
+    const resolvedIds = this.storage
+      .getAll()
+      .filter((a) => a.status === "resolved")
+      .map((a) => a.id);
+    if (resolvedIds.length === 0) return 0;
+    for (const id of resolvedIds) {
+      const handle = this.threads.get(id);
+      if (handle) {
+        handle.thread.dispose();
+        this.threads.delete(id);
+      }
+    }
+    await this.storage.removeMany(resolvedIds);
+    this.changeEmitter.fire();
+    return resolvedIds.length;
+  }
+
   async deleteThread(thread: vscode.CommentThread): Promise<void> {
     const id = this.findAnnotationIdByThread(thread);
     if (id) {

@@ -53,6 +53,10 @@
       {
         "command": "codeAnnotate.showAllAnnotations",
         "title": "Code Annotate: Show All Annotations"
+      },
+      {
+        "command": "codeAnnotate.clearResolved",
+        "title": "Code Annotate: Clear Resolved Annotations"
       }
     ],
     "menus": {

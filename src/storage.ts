@@ -94,6 +94,13 @@ export class Storage implements vscode.Disposable {
     await this.persist();
   }
 
+  async removeMany(ids: string[]): Promise<void> {
+    if (ids.length === 0) return;
+    const drop = new Set(ids);
+    this.data.annotations = this.data.annotations.filter((a) => !drop.has(a.id));
+    await this.persist();
+  }
+
   private async persist(): Promise<void> {
     if (!this.fileUri) return;
     const text = JSON.stringify(this.data, null, 2) + "\n";
