@@ -40,12 +40,15 @@ Line numbers are 1-indexed and inclusive. The `author` defaults to your `git con
 
 ## Commands
 
-| Command                             | Default keybinding         |
-| ----------------------------------- | -------------------------- |
-| Code Annotate: Add Annotation       | `Cmd+Alt+A` / `Ctrl+Alt+A` |
-| Code Annotate: Show All Annotations | —                          |
+| Command                                   | Default keybinding         |
+| ----------------------------------------- | -------------------------- |
+| Code Annotate: Add Annotation             | `Cmd+Alt+A` / `Ctrl+Alt+A` |
+| Code Annotate: Show All Annotations       | —                          |
+| Code Annotate: Clear Resolved Annotations | —                          |
 
 Reply / Resolve / Unresolve / Delete appear in the thread's title and reply bars. In the comment input, **Enter** submits and **Shift+Enter** inserts a newline.
+
+**Clear Resolved Annotations** bulk-deletes every annotation currently marked resolved across the workspace, after a confirmation prompt — a quick way to tidy up once a review pass is done.
 
 ## Caveats (v1)
 
