@@ -8,3 +8,8 @@ tsconfig.json
 **/*.map
 **/*.ts
 .annotations.json
+.claude/**
+.jarvis/**
+media/screenshots/**
+*.vsix
+package-lock.json
